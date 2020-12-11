@@ -24,6 +24,18 @@
             
             <tag> 123 </tag>
             
+            <tag> test0 </tag>
+            
+            <tag> 1 </tag>
+            
+            <tag> test1 </tag>
+            
+            <tag> 2 </tag>
+            
+            <tag> test2 </tag>
+            
+            <tag> 3 </tag>
+            
         </tags>
       
     </entry>
@@ -127,6 +139,22 @@
           
       </categories>
       
+      
+        <tags>
+            
+            <tag> test0 </tag>
+            
+            <tag> 1 </tag>
+            
+            <tag> test1 </tag>
+            
+            <tag> 2 </tag>
+            
+            <tag> test2 </tag>
+            
+            <tag> 3 </tag>
+            
+        </tags>
       
     </entry>
     
