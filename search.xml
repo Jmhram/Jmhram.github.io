@@ -1,70 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Hello World</title>
-    <url>/2020/11/30/hello-world/</url>
-    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+    <title>注册表详解</title>
+    <url>/2020/12/23/%E6%B3%A8%E5%86%8C%E8%A1%A8%E8%AF%A6%E8%A7%A3/</url>
+    <content><![CDATA[<h4 id="0x00-起因"><a href="#0x00-起因" class="headerlink" title="0x00 起因"></a>0x00 起因</h4><p>事情的起因是这样的：</p>
+<p>​    前两天，在使用丝滑的Microsoft Office后。我把目光投向了电脑中的WPS，不由得怒从心头起，恶向胆边生，没错！我决定将WPS换成Microsoft Office。虽然WPS苦苦挽留我（<del>指无法卸载干净</del>），但我岂是那种与前任藕断丝连的人？于是直接网上寻找如何干净利落的卸载WPS，然后照着点赞最多的答案开始操作。</p>
+<p>​    按照点赞最多的回答，需要删除WPS留存在电脑中的注册表，即删除注册表的office文件夹。我啪的一下，直接删除，很快啊，心想着就能美滋滋用上Microsoft Office了。但是，当我打开[开始菜单]，发现我的快捷方式一多半都没了，立刻意识刚刚删的注册表中的office文件夹还有其他东西，我大意了啊。</p>
+<p>​    但是注册表又不能Ctrl+Z撤销，所以我只能再次查查有没有什么方法恢复注册表，很快啊，我又再次发现注册表是会自动备份的，所以可以将注册表的备份恢复回去（我感觉我又可以了）</p>
+<p><img src="https://raw.githubusercontent.com/Jmhram/markdown/main/img/20201223201721.png" alt="image-20201223201721686" loading="lazy"></p>
+<p>​    我打开备份文件夹一看，空的？！我想起前两天C盘空间紧张，我就把一些系统备份文件删掉了，我他喵怎么就这么手欠呢？所以最终的解决办法：按住回去给那个回答点踩的冲动，重新把快捷方式一个一个粘回去。</p>
+<p>​    因此，本着”人不能在同一地方跌倒两次”的想法，我怀着悲伤的心情学习了注册表。</p>
+<p>（Q:下次还敢吗？A:只要备好份就可劲造，欸嘿）</p>
+<p><img src="https://raw.githubusercontent.com/Jmhram/markdown/main/img/20201223202835.png" alt="image-20201223202835836" loading="lazy"></p>
+<h4 id="0x01-注册表概述"><a href="#0x01-注册表概述" class="headerlink" title="0x01 注册表概述"></a>0x01 注册表概述</h4><p>注册表记录了用户安装在计算机上的软件和<strong>每个程序的相互关联信息</strong>，它包括了计算机的硬件配置，包括自动配置的即插即用的设备和已有的各种设备说明、状态属性以及各种状态信息和数据。利用一个功能强大的注册表数据库来统一集中地管理系统硬件设施、软件配置等信息，从而方便了管理，增强了系统的稳定性。</p>
+<p>也就是说：<strong>注册表是Windows操作系统的一个管理程序信息的数据库</strong></p>
+<h4 id="0x02-注册表里的数据表示什么"><a href="#0x02-注册表里的数据表示什么" class="headerlink" title="0x02 注册表里的数据表示什么"></a>0x02 注册表里的数据表示什么</h4><p>当我们打开注册表，首先可以看见：这5个文件夹成为<strong>根键</strong></p>
+<p><img src="https://raw.githubusercontent.com/Jmhram/markdown/main/img/20201223203654.png" alt="image-20201223203654899" loading="lazy"></p>
+<p>含义是这样的：</p>
+<p><strong>HKEY_CLASSES_ROOT</strong>：启动<strong>应用程序</strong>所需的全部信息，包括扩展名，应用程序与文档之间的关系，驱动程序名，DDE和OLE信息，类ID编号和应用程序与文档的图标等。<br> <strong>HKEY_CURRENT_USER</strong>：当前<strong>登录用户</strong>的配置信息，包括环境变量，个人程序以及桌面设置等<br> <strong>HKEY_LOCAL_MACHINE</strong>：该根键包括本地计算机的<strong>系统信息</strong>，包括硬件和操作系统信息，安全数据和计算机专用的各类软件设置信息<br> <strong>HKEY_USERS</strong>：该根键包括计算机的<strong>所有用户</strong>使用的配置数据，这些数据只有在用户登录系统时才能访问。这些信息告诉系统当前用户使用的图标，激活的程序组，开始菜单的内容以及颜色，字体<br> <strong>HKEY_CURRENT_CONFIG</strong>：常被用户改变的部分<strong>硬件软件配置</strong>，其中的信息是从HKEY_LOCAL_MACHINE中映射出来的。</p>
+<h4 id="0x03-注册表里的子项表示什么"><a href="#0x03-注册表里的子项表示什么" class="headerlink" title="0x03 注册表里的子项表示什么"></a>0x03 注册表里的子项表示什么</h4><p>在根键下面有一堆的文件夹，称为子项，接下来是各种子项的含义：</p>
+<p><strong>HKEY_CLASSES_ROOT子项</strong>：打开时会发现一长串子项</p>
+<p>分为两种：已注册的各类文件拓展名、各种文件类型的有关信息</p>
+<p> <strong>HKEY_CURRENT_USER子项</strong>：</p>
+<p>此根键中保存的信息（当前用户的子项信息）与HKEY_USERS_DEFAULT下面的一模一样的。任何对 HKEY_CURRENT_USER根键中的信息的修改都会导致对HKEY_USERS_DEFAULT中子项的修改</p>
+<p> <strong>HKEY_LOCAL_MACHINE子项</strong>：</p>
+<p>存放的是用来控制系统和软件的设置。包含的子项有：</p>
+<p>HARDWARE：系统使用的浮点处理器、串口等信息<br>SECURITY：为将来的高级功能而预留<br>SOFTWARE：所有已安装的应用程序的信息，各个程序的控制信息分别安装在相应的子项中（刚刚大意删除的office子项就在里面）<br> SYSTEM：该子项是启动时所需的信息和修复系统时所需要的信息</p>
+<p> <strong>HKEY_USERS</strong>：</p>
+<p>存放默认用户、当前登录用户和软件的信息，其中DEFAULT子项是其中最重要的，它的配置是针对未来将会被创建的新用户的。新用户根据默认用户的配置信息来生成自己的配置文件，该配置文件包括环境、屏幕和声音等多种信息</p>
+<p> <strong>HKEY_CURRENT_CONFIG</strong>：</p>
+<p>常被用户改变的部分硬件软件配置</p>
+<h4 id="0x04-总结"><a href="#0x04-总结" class="headerlink" title="0x04 总结"></a>0x04 总结</h4><p>​    经过一通对注册表的学习之后，我发现一件很严肃的事情：</p>
+<p>​    我删除的应该是HKEY_LOCAL_MACHINE\SOFTWARE\kingsoft下的office文件夹，而开始屏幕中的快捷方式应该会属于HKEY_CURRENT_USER，这俩应该八竿子打不着才对，难道是因为某些别的误操作才导致我的开始屏幕的快捷方式谜之消失的？</p>
+<h4 id="0x05-参考"><a href="#0x05-参考" class="headerlink" title="0x05 参考"></a>0x05 参考</h4><p>[1] Windows注册表内容详解 <a href="https://www.jianshu.com/p/0cfcbba813ac">https://www.jianshu.com/p/0cfcbba813ac</a></p>
+<p>[2] Windows注册表超级详解 <a href="http://pc.kutx.cn/pc/pc11637.htm">http://pc.kutx.cn/pc/pc11637.htm</a></p>
+<p>[3] windows注册表详解 <a href="https://blog.csdn.net/dpsying/article/details/46907891">https://blog.csdn.net/dpsying/article/details/46907891</a></p>
 ]]></content>
       <categories>
-        <category>1</category>
+        <category>计算机</category>
       </categories>
       <tags>
-        <tag>test0</tag>
-        <tag>1</tag>
-        <tag>test1</tag>
-        <tag>2</tag>
-        <tag>test2</tag>
-        <tag>3</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>test2</title>
-    <url>/2020/11/30/test2/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>2</category>
-      </categories>
-      <tags>
-        <tag>test0</tag>
-        <tag>1</tag>
-        <tag>test2</tag>
-        <tag>3</tag>
-        <tag>test3</tag>
-        <tag>4</tag>
-        <tag>test4</tag>
-        <tag>5</tag>
-        <tag>test5</tag>
-        <tag>6</tag>
-        <tag>test6</tag>
-        <tag>7</tag>
-        <tag>test7</tag>
-        <tag>08</tag>
-        <tag>test8</tag>
-        <tag>09</tag>
-        <tag>test9</tag>
-        <tag>10</tag>
-        <tag>test10</tag>
-        <tag>11</tag>
-        <tag>test11</tag>
-        <tag>12</tag>
-        <tag>test12</tag>
-        <tag>13</tag>
-        <tag>test13</tag>
-        <tag>14</tag>
-        <tag>test14</tag>
-        <tag>15</tag>
+        <tag>计算机</tag>
+        <tag>系统</tag>
+        <tag>注册表</tag>
       </tags>
   </entry>
 </search>
