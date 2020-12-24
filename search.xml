@@ -17,16 +17,17 @@
 <h4 id="0x02-注册表里的数据表示什么"><a href="#0x02-注册表里的数据表示什么" class="headerlink" title="0x02 注册表里的数据表示什么"></a>0x02 注册表里的数据表示什么</h4><p>当我们打开注册表，首先可以看见：这5个文件夹成为<strong>根键</strong></p>
 <p><img src="https://raw.githubusercontent.com/Jmhram/markdown/main/img/20201223203654.png" alt="image-20201223203654899" loading="lazy"></p>
 <p>含义是这样的：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">HKEY_CLASSES_ROOT：启动应用程序所需的全部信息，包括扩展名，应用程序与文档之间的关系，驱动程序名，DDE和OLE信息，类ID编号和应用程序与文档的图标等。</span><br><span class="line">HKEY_CURRENT_USER：当前登录用户的配置信息，包括环境变量，个人程序以及桌面设置等</span><br><span class="line">HKEY_LOCAL_MACHINE：该根键包括本地计算机的系统信息，包括硬件和操作系统信息，安全数据和计算机专用的各类软件设置信息</span><br><span class="line">HKEY_USERS：该根键包括计算机的所有用户使用的配置数据，这些数据只有在用户登录系统时才能访问。这些信息告诉系统当前用户使用的图标，激活的程序组，开始菜单的内容以及颜色，字体</span><br><span class="line">HKEY_CURRENT_CONFIG：常被用户改变的部分硬件软件配置，其中的信息是从HKEY_LOCAL_MACHINE中映射出来的</span><br></pre></td></tr></table></figure>
-
-
-
+<blockquote>
+<p>HKEY_CLASSES_ROOT：启动应用程序所需的全部信息，包括扩展名，应用程序与文档之间的关系，驱动程序名，DDE和OLE信息，类ID编号和应用程序与文档的图标等。<br>HKEY_CURRENT_USER：当前登录用户的配置信息，包括环境变量，个人程序以及桌面设置等<br>HKEY_LOCAL_MACHINE：该根键包括本地计算机的系统信息，包括硬件和操作系统信息，安全数据和计算机专用的各类软件设置信息<br>HKEY_USERS：该根键包括计算机的所有用户使用的配置数据，这些数据只有在用户登录系统时才能访问。这些信息告诉系统当前用户使用的图标，激活的程序组，开始菜单的内容以及颜色，字体<br>HKEY_CURRENT_CONFIG：常被用户改变的部分硬件软件配置，其中的信息是从HKEY_LOCAL_MACHINE中映射出来的</p>
+</blockquote>
 <h4 id="0x03-注册表里的子项表示什么"><a href="#0x03-注册表里的子项表示什么" class="headerlink" title="0x03 注册表里的子项表示什么"></a>0x03 注册表里的子项表示什么</h4><p>在根键下面有一堆的文件夹，称为子项，接下来是各种子项的含义：</p>
-<p>**</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">HKEY_CLASSES_ROOT子项：</span><br><span class="line">打开时会发现一长串子项</span><br><span class="line">分为两种：已注册的各类文件拓展名、各种文件类型的有关信息</span><br><span class="line"></span><br><span class="line">HKEY_CURRENT_USER子项：</span><br><span class="line">此根键中保存的信息（当前用户的子项信息）与HKEY_USERS_DEFAULT下面的一模一样的。任何对 HKEY_CURRENT_USER根键中的信息的修改都会导致对HKEY_USERS_DEFAULT中子项的修改</span><br><span class="line"></span><br><span class="line">HKEY_LOCAL_MACHINE子项：</span><br><span class="line">存放的是用来控制系统和软件的设置。包含的子项有：</span><br><span class="line">HARDWARE：系统使用的浮点处理器、串口等信息</span><br><span class="line">SECURITY：为将来的高级功能而预留</span><br><span class="line">SOFTWARE：所有已安装的应用程序的信息，各个程序的控制信息分别安装在相应的子项中（刚刚大意删除的office子项就在里面）</span><br><span class="line">SYSTEM：该子项是启动时所需的信息和修复系统时所需要的信息</span><br><span class="line"></span><br><span class="line">HKEY_USERS子项：</span><br><span class="line">存放默认用户、当前登录用户和软件的信息，其中DEFAULT子项是其中最重要的，它的配置是针对未来将会被创建的新用户的。新用户根据默认用户的配置信息来生成自己的配置文件，该配置文件包括环境、屏幕和声音等多种信息</span><br><span class="line"></span><br><span class="line">HKEY_CURRENT_CONFIG子项：</span><br><span class="line">常被用户改变的部分硬件软件配置</span><br></pre></td></tr></table></figure>
-
-
-
+<blockquote>
+<p>HKEY_CLASSES_ROOT子项：<br>打开时会发现一长串子项<br>分为两种：已注册的各类文件拓展名、各种文件类型的有关信息</p>
+<p>HKEY_CURRENT_USER子项：<br>此根键中保存的信息（当前用户的子项信息）与HKEY_USERS_DEFAULT下面的一模一样的。任何对 HKEY_CURRENT_USER根键中的信息的修改都会导致对HKEY_USERS_DEFAULT中子项的修改</p>
+<p>HKEY_LOCAL_MACHINE子项：<br>存放的是用来控制系统和软件的设置。包含的子项有：<br>HARDWARE：系统使用的浮点处理器、串口等信息<br>SECURITY：为将来的高级功能而预留<br>SOFTWARE：所有已安装的应用程序的信息，各个程序的控制信息分别安装在相应的子项中（刚刚大意删除的office子项就在里面）<br>SYSTEM：该子项是启动时所需的信息和修复系统时所需要的信息</p>
+<p>HKEY_USERS子项：<br>存放默认用户、当前登录用户和软件的信息，其中DEFAULT子项是其中最重要的，它的配置是针对未来将会被创建的新用户的。新用户根据默认用户的配置信息来生成自己的配置文件，该配置文件包括环境、屏幕和声音等多种信息</p>
+<p>HKEY_CURRENT_CONFIG子项：<br>常被用户改变的部分硬件软件配置</p>
+</blockquote>
 <h4 id="0x04-总结"><a href="#0x04-总结" class="headerlink" title="0x04 总结"></a>0x04 总结</h4><p>​    经过一通对注册表的学习之后，我发现一件很严肃的事情：</p>
 <p>​    我删除的应该是HKEY_LOCAL_MACHINE\SOFTWARE\kingsoft下的office文件夹，而开始屏幕中的内容应该会属于HKEY_USERS，这俩应该八竿子打不着才对，难道是因为某些别的误操作才导致我的开始屏幕的快捷方式谜之消失的？</p>
 <h4 id="0x05-参考"><a href="#0x05-参考" class="headerlink" title="0x05 参考"></a>0x05 参考</h4><p>[1] Windows注册表内容详解 <a href="https://www.jianshu.com/p/0cfcbba813ac">https://www.jianshu.com/p/0cfcbba813ac</a></p>
