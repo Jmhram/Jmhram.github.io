@@ -1,52 +1,29 @@
-<?xml version="1.0" encoding="utf-8"?>
-<search>
-  <entry>
-    <title>注册表详解</title>
-    <url>/2020/12/23/%E6%B3%A8%E5%86%8C%E8%A1%A8%E8%AF%A6%E8%A7%A3/</url>
-    <content><![CDATA[<h4 id="0x00-起因"><a href="#0x00-起因" class="headerlink" title="0x00 起因"></a>0x00 起因</h4><p>事情的起因是这样的：</p>
-<p>​    前两天，在使用丝滑的Microsoft Office后。我把目光投向了电脑中的WPS，不由得怒从心头起，恶向胆边生，没错！我决定将WPS换成Microsoft Office。虽然WPS苦苦挽留我（<del>指无法卸载干净</del>），但我岂是那种与前任藕断丝连的人？于是直接网上寻找如何干净利落的卸载WPS，然后照着点赞最多的答案开始操作。</p>
-<p>​    按照点赞最多的回答，需要删除WPS留存在电脑中的注册表，即删除注册表的office文件夹。我啪的一下，直接删除，很快啊，心想着就能美滋滋用上Microsoft Office了。但是，当我打开[开始菜单]，发现我的快捷方式一多半都没了，立刻意识刚刚删的注册表中的office文件夹还有其他东西，我大意了啊。</p>
-<p>​    但是注册表又不能Ctrl+Z撤销，所以我只能再次查查有没有什么方法恢复注册表，很快啊，我又再次发现注册表是会自动备份的，所以可以将注册表的备份恢复回去（我感觉我又可以了）</p>
-<p><img src="https://raw.githubusercontent.com/Jmhram/markdown/main/img/20201223201721.png" alt="image-20201223201721686" loading="lazy"></p>
-<p>​    我打开备份文件夹一看，空的？！我想起前两天C盘空间紧张，我就把一些系统备份文件删掉了，我他喵怎么就这么手欠呢？所以最终的解决办法：按住回去给那个解决方案点踩的冲动，重新把快捷方式一个一个粘回去。</p>
-<p>​    因此，本着”人不能在同一地方跌倒两次”的想法，我怀着悲伤的心情学习了注册表。</p>
-<p>（Q:下次还敢吗？A:我错了QAQ，下次备好份再干，欸嘿~）</p>
-<p><img src="https://raw.githubusercontent.com/Jmhram/markdown/main/img/20201223202835.png" alt="image-20201223202835836" loading="lazy"></p>
-<h4 id="0x01-注册表概述"><a href="#0x01-注册表概述" class="headerlink" title="0x01 注册表概述"></a>0x01 注册表概述</h4><p>注册表记录了用户安装在计算机上的软件和<strong>每个程序的相互关联信息</strong>，它包括了计算机的硬件配置，包括自动配置的即插即用的设备和已有的各种设备说明、状态属性以及各种状态信息和数据。利用一个功能强大的注册表数据库来统一集中地管理系统硬件设施、软件配置等信息，从而方便了管理，增强了系统的稳定性。</p>
-<p>也就是说：<code>注册表是Windows操作系统的一个管理程序信息的数据库</code></p>
-<h4 id="0x02-注册表里的数据表示什么"><a href="#0x02-注册表里的数据表示什么" class="headerlink" title="0x02 注册表里的数据表示什么"></a>0x02 注册表里的数据表示什么</h4><p>当我们打开注册表，首先可以看见：这5个文件夹成为<strong>根键</strong></p>
-<p><img src="https://raw.githubusercontent.com/Jmhram/markdown/main/img/20201223203654.png" alt="image-20201223203654899" loading="lazy"></p>
-<p>含义是这样的：</p>
-<blockquote>
-<p>HKEY_CLASSES_ROOT：启动应用程序所需的全部信息，包括扩展名，应用程序与文档之间的关系，驱动程序名，DDE和OLE信息，类ID编号和应用程序与文档的图标等。<br>HKEY_CURRENT_USER：当前登录用户的配置信息，包括环境变量，个人程序以及桌面设置等<br>HKEY_LOCAL_MACHINE：该根键包括本地计算机的系统信息，包括硬件和操作系统信息，安全数据和计算机专用的各类软件设置信息<br>HKEY_USERS：该根键包括计算机的所有用户使用的配置数据，这些数据只有在用户登录系统时才能访问。这些信息告诉系统当前用户使用的图标，激活的程序组，开始菜单的内容以及颜色，字体<br>HKEY_CURRENT_CONFIG：常被用户改变的部分硬件软件配置，其中的信息是从HKEY_LOCAL_MACHINE中映射出来的</p>
-</blockquote>
-<h4 id="0x03-注册表里的子项表示什么"><a href="#0x03-注册表里的子项表示什么" class="headerlink" title="0x03 注册表里的子项表示什么"></a>0x03 注册表里的子项表示什么</h4><p>在根键下面有一堆的文件夹，称为子项，接下来是各种子项的含义：</p>
-<blockquote>
-<p>HKEY_CLASSES_ROOT子项：<br>打开时会发现一长串子项<br>分为两种：已注册的各类文件拓展名、各种文件类型的有关信息</p>
-<p>HKEY_CURRENT_USER子项：<br>此根键中保存的信息（当前用户的子项信息）与HKEY_USERS_DEFAULT下面的一模一样的。任何对 HKEY_CURRENT_USER根键中的信息的修改都会导致对HKEY_USERS_DEFAULT中子项的修改</p>
-<p>HKEY_LOCAL_MACHINE子项：<br>存放的是用来控制系统和软件的设置。包含的子项有：<br>HARDWARE：系统使用的浮点处理器、串口等信息<br>SECURITY：为将来的高级功能而预留<br>SOFTWARE：所有已安装的应用程序的信息，各个程序的控制信息分别安装在相应的子项中（刚刚大意删除的office子项就在里面）<br>SYSTEM：该子项是启动时所需的信息和修复系统时所需要的信息</p>
-<p>HKEY_USERS子项：<br>存放默认用户、当前登录用户和软件的信息，其中DEFAULT子项是其中最重要的，它的配置是针对未来将会被创建的新用户的。新用户根据默认用户的配置信息来生成自己的配置文件，该配置文件包括环境、屏幕和声音等多种信息</p>
-<p>HKEY_CURRENT_CONFIG子项：<br>常被用户改变的部分硬件软件配置</p>
-</blockquote>
-<h4 id="0x04-总结"><a href="#0x04-总结" class="headerlink" title="0x04 总结"></a>0x04 总结</h4><p>​    经过一通对注册表的学习之后，我发现一件很严肃的事情：</p>
-<p>​    我删除的应该是HKEY_LOCAL_MACHINE\SOFTWARE\kingsoft下的office文件夹，而开始屏幕中的内容应该会属于HKEY_USERS，这俩应该八竿子打不着才对，难道是因为某些别的误操作才导致我的开始屏幕的快捷方式谜之消失的？</p>
-<h4 id="0x05-参考"><a href="#0x05-参考" class="headerlink" title="0x05 参考"></a>0x05 参考</h4><p>[1] Windows注册表内容详解 <a href="https://www.jianshu.com/p/0cfcbba813ac">https://www.jianshu.com/p/0cfcbba813ac</a></p>
-<p>[2] Windows注册表超级详解 <a href="http://pc.kutx.cn/pc/pc11637.htm">http://pc.kutx.cn/pc/pc11637.htm</a></p>
-<p>[3] windows注册表详解 <a href="https://blog.csdn.net/dpsying/article/details/46907891">https://blog.csdn.net/dpsying/article/details/46907891</a></p>
-]]></content>
-      <categories>
-        <category>计算机</category>
-      </categories>
-      <tags>
-        <tag>计算机</tag>
-        <tag>系统</tag>
-        <tag>注册表</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>反序列化漏洞学习笔记</title>
-    <url>/2021/04/27/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</url>
-    <content><![CDATA[<h3 id="0x01-原理"><a href="#0x01-原理" class="headerlink" title="0x01 原理"></a>0x01 原理</h3><h4 id="1-1-序列化"><a href="#1-1-序列化" class="headerlink" title="1.1 序列化"></a>1.1 序列化</h4><p>序列化是<font color=red><code>将一个对象压缩成一个字符串的方法</code></font>，可以将对象的状态信息转化为可以存储或传输的形式。</p>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="Echoram"><meta name="copyright" content="Echoram"><meta name="generator" content="Hexo 5.2.0"><meta name="theme" content="hexo-theme-yun"><title>反序列化漏洞学习笔记 | Echoram's blog</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/star-markdown-css@0.1.22/dist/yun/yun-markdown.min.css"><script src="//at.alicdn.com/t/font_1140697_ed8vp4atwoj.js" async></script><script src="https://cdn.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>document.addEventListener("DOMContentLoaded", () => {
+  [".post-card",".post-content img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+});
+</script><link id="light-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/themes/prism.css" media="(prefers-color-scheme: light)"><link id="dark-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/themes/prism-tomorrow.css" media="(prefers-color-scheme: dark)"><link rel="shortcut icon" type="image/svg+xml" href="/images/head.ico"><link rel="mask-icon" href="/images/head.ico" color="#0078E7"><link rel="alternate icon" href="/yun.ico"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="preload" href="/js/utils.js" as="script"><link rel="preload" href="/js/hexo-theme-yun.js" as="script"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script id="yun-config">
+    const Yun = window.Yun || {};
+    window.CONFIG = {"hostname":"echoram.tk","root":"/","title":["Echoram's","Blog"],"version":"1.3.0","mode":"auto","copycode":true,"anonymous_image":"https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/avatar/none.jpg","say":{"api":"https://v1.hitokoto.cn","hitokoto":true},"local_search":{"path":"/search.xml"},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]}};
+  </script><meta name="description" content="0x01 原理1.1 序列化序列化是将一个对象压缩成一个字符串的方法，可以将对象的状态信息转化为可以存储或传输的形式。 举个栗子：此处代码来源于[1] &lt;?php class userInfo &amp;#123;     private $passwd &#x3D; &#39;weak&#39;;     protected $sex &#x3D; &#39;male&#39;;     public $name &#x3D; &#39;ama666&#39;;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="反序列化漏洞学习笔记">
+<meta property="og:url" content="http://echoram.tk/2021/04/27/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="Echoram&#39;s blog">
+<meta property="og:description" content="0x01 原理1.1 序列化序列化是将一个对象压缩成一个字符串的方法，可以将对象的状态信息转化为可以存储或传输的形式。 举个栗子：此处代码来源于[1] &lt;?php class userInfo &amp;#123;     private $passwd &#x3D; &#39;weak&#39;;     protected $sex &#x3D; &#39;male&#39;;     public $name &#x3D; &#39;ama666&#39;;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/Jmhram/markdown/main/img/20210430094650.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Jmhram/markdown/main/img/20210430094643.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Jmhram/markdown/main/img/20210430201511.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Jmhram/markdown/main/img/20210430201504.png">
+<meta property="article:published_time" content="2021-04-28T00:00:00.000Z">
+<meta property="article:modified_time" content="2021-04-30T13:00:21.408Z">
+<meta property="article:author" content="Echoram">
+<meta property="article:tag" content="反序列化">
+<meta property="article:tag" content="Web">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Jmhram/markdown/main/img/20210430094650.png"><script src="/js/ui/mode.js"></script></head><body><script defer src="https://cdn.jsdelivr.net/npm/animejs@latest/anime.min.js"></script><script defer src="/js/ui/fireworks.js"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-list-ordered"></use></svg></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-passport-line"></use></svg></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="Echoram"><img width="96" loading="lazy" src="/images/avatar.jpg" alt="Echoram"><span class="site-author-status" title="爱你呦~">💘</span></a><div class="site-author-name"><a href="/about/">Echoram</a></div><a class="site-name" href="/about/site.html">Echoram's blog</a><sub class="site-subtitle">己所不欲,勿施于人</sub><div class="site-desciption">Talk is cheap,show me the code.</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-home-4-line"></use></svg></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-archive-line"></use></svg></span><span class="site-state-item-count">2</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-2-line"></use></svg></span><span class="site-state-item-count">2</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="site-state-item-count">5</span></a></div><a class="site-state-item hty-icon-button" href="/comments/" title="留言板"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-clipboard-line"></use></svg></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/Jmhram" title="GitHub" target="_blank" style="color:#66ccff"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-github-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:mail@echoram.tk" title="E-Mail" target="_blank" style="color:#39c5bb"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-mail-line"></use></svg></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="我的小伙伴们" style="color:dodgerblue"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-genderless-line"></use></svg></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-contrast-2-line"></use></svg></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#0x01-%E5%8E%9F%E7%90%86"><span class="toc-number">1.</span> <span class="toc-text">0x01 原理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-1-%E5%BA%8F%E5%88%97%E5%8C%96"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 序列化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 反序列化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-3-PHP%E9%AD%94%E6%9C%AF%E6%96%B9%E6%B3%95"><span class="toc-number">1.3.</span> <span class="toc-text">1.3 PHP魔术方法</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x02-BUUCTF-%E7%BD%91%E9%BC%8E%E6%9D%AF-2020-%E9%9D%92%E9%BE%99%E7%BB%84-AreUSerialz"><span class="toc-number">2.</span> <span class="toc-text">0x02 BUUCTF-[网鼎杯 2020 青龙组]AreUSerialz</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 源码分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-POC"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 POC</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x03-Typecho%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0"><span class="toc-number">3.</span> <span class="toc-text">0x03 Typecho反序列化漏洞复现</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-%E6%BC%8F%E6%B4%9E%E7%AE%80%E4%BB%8B"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 漏洞简介</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 源码分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-3-%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B"><span class="toc-number">3.3.</span> <span class="toc-text">3.3 复现流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-4-payload%E6%9E%84%E9%80%A0%EF%BC%88%E5%8F%82%E8%80%83-5-%EF%BC%89"><span class="toc-number">3.4.</span> <span class="toc-text">3.4 payload构造（参考[5]）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x04-%E5%8F%82%E8%80%83"><span class="toc-number">4.</span> <span class="toc-text">0x04 参考</span></a></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="post-block" itemscope itemtype="https://schema.org/Article"><link itemprop="mainEntityOfPage" href="http://echoram.tk/2021/04/27/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="Echoram"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="Echoram's blog"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">反序列化漏洞学习笔记</h1><div class="post-meta"><div class="post-time" style="display:block"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-line"></use></svg></span> <time title="创建时间：2021-04-27 20:00:00" itemprop="dateCreated datePublished" datetime="2021-04-27T20:00:00-04:00">2021-04-27</time><span class="post-meta-divider">-</span><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-2-line"></use></svg></span> <time title="修改时间：2021-04-30 09:00:21" itemprop="dateModified" datetime="2021-04-30T09:00:21-04:00">2021-04-30</time></div><span class="post-count"><span class="post-symbolcount"><span class="post-meta-item-icon" title="本文字数"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-file-word-line"></use></svg></span> <span title="本文字数">2.7k</span><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读时长"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-timer-line"></use></svg></span> <span title="阅读时长">12m</span></span></span><span class="leancloud_visitors" id="/2021/04/27/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" data-flag-title="反序列化漏洞学习笔记"><span class="post-meta-divider">-</span><span class="post-meta-item-icon" title="阅读次数"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-eye-line"></use></svg> <span class="leancloud-visitors-count"></span></span></span><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-line"></use></svg></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category" href="/categories/%E7%AC%94%E8%AE%B0/" style="--text-color:dimgray" itemprop="url" rel="index"><span itemprop="text">笔记</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag" href="/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">反序列化</span></a><a class="tag" href="/tags/Web/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">Web</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body" style="--smc-primary:#0078E7;"><h3 id="0x01-原理"><a href="#0x01-原理" class="headerlink" title="0x01 原理"></a>0x01 原理</h3><h4 id="1-1-序列化"><a href="#1-1-序列化" class="headerlink" title="1.1 序列化"></a>1.1 序列化</h4><p>序列化是<font color=red><code>将一个对象压缩成一个字符串的方法</code></font>，可以将对象的状态信息转化为可以存储或传输的形式。</p>
 <p><strong>举个栗子</strong>：此处代码来源于[1]</p>
 <pre class="language-php" data-language="php"><code class="language-php"><span class="token php language-php"><span class="token delimiter important">&lt;?php</span>
 <span class="token keyword">class</span> <span class="token class-name">userInfo</span>
@@ -271,7 +248,7 @@
 <p><img src="https://raw.githubusercontent.com/Jmhram/markdown/main/img/20210430094650.png" alt="image-20210430094513449" loading="lazy"></p>
 <p><img src="https://raw.githubusercontent.com/Jmhram/markdown/main/img/20210430094643.png" alt="image-20210430094448956" loading="lazy"></p>
 <h3 id="0x03-Typecho反序列化漏洞复现"><a href="#0x03-Typecho反序列化漏洞复现" class="headerlink" title="0x03 Typecho反序列化漏洞复现"></a>0x03 Typecho反序列化漏洞复现</h3><h4 id="3-1-漏洞简介"><a href="#3-1-漏洞简介" class="headerlink" title="3.1 漏洞简介"></a>3.1 漏洞简介</h4><p>Typecho在程序安装后不会删除<font color=orange><code>install.php</code></font>，在该页面中存在反序列化漏洞</p>
-<p>程序版本：<a href="https://github.com/typecho/typecho/releases">v1.1-15.5.12-beta</a></p>
+<p>程序版本：<a target="_blank" rel="noopener" href="https://github.com/typecho/typecho/releases">v1.1-15.5.12-beta</a></p>
 <h4 id="3-2-源码分析"><a href="#3-2-源码分析" class="headerlink" title="3.2 源码分析"></a>3.2 源码分析</h4><p>在<font color=orange><code>install.php</code></font>的第230行中，找到反序列化相关内容：将get到的<font color=orange><code>__typecho_config</code></font>进行base64解码后，再反序列化，将反序列化的结果放入了<font color=orange><code>Typecho_Db</code></font>类中</p>
 <pre class="language-php" data-language="php"><code class="language-php"><span class="token php language-php"><span class="token delimiter important">&lt;?php</span>
     <span class="token variable">$config</span> <span class="token operator">=</span> <span class="token function">unserialize</span><span class="token punctuation">(</span><span class="token function">base64_decode</span><span class="token punctuation">(</span>Typecho_Cookie<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token single-quoted-string string">'__typecho_config'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -418,18 +395,53 @@
 <p><img src="https://raw.githubusercontent.com/Jmhram/markdown/main/img/20210430201511.png" alt="image-20210430201358165" loading="lazy"></p>
 <p>shell上传成功：</p>
 <p><img src="https://raw.githubusercontent.com/Jmhram/markdown/main/img/20210430201504.png" alt="image-20210430201431734" loading="lazy"></p>
-<h3 id="0x04-参考"><a href="#0x04-参考" class="headerlink" title="0x04 参考"></a>0x04 参考</h3><p>[1] [红日安全]Web安全Day15 - 反序列化实战攻防 <a href="https://xz.aliyun.com/t/7023">https://xz.aliyun.com/t/7023</a></p>
-<p>[2] PHP 魔术方法 - 简介 <a href="https://www.twle.cn/c/yufei/phpmmethod/phpmmethod-basic-index.html">https://www.twle.cn/c/yufei/phpmmethod/phpmmethod-basic-index.html</a></p>
-<p>[3] [BUUCTF-WEB] [网鼎杯 2020 青龙组]AreUSerialz <a href="https://juejin.cn/post/6929123441257742350">https://juejin.cn/post/6929123441257742350</a></p>
-<p>[4] AreUSerialz-[网鼎杯 2020 青龙组]-[传送门-＞BUUCTF] <a href="https://www.secn.net/article/349246.html">https://www.secn.net/article/349246.html</a></p>
-<p>[5] Typecho反序列化漏洞分析 <a href="https://lanvnal.com/2020/03/15/typecho-fan-xu-lie-hua-lou-dong-fen-xi/">https://lanvnal.com/2020/03/15/typecho-fan-xu-lie-hua-lou-dong-fen-xi/</a></p>
-]]></content>
-      <categories>
-        <category>笔记</category>
-      </categories>
-      <tags>
-        <tag>反序列化</tag>
-        <tag>Web</tag>
-      </tags>
-  </entry>
-</search>
+<h3 id="0x04-参考"><a href="#0x04-参考" class="headerlink" title="0x04 参考"></a>0x04 参考</h3><p>[1] [红日安全]Web安全Day15 - 反序列化实战攻防 <a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/7023">https://xz.aliyun.com/t/7023</a></p>
+<p>[2] PHP 魔术方法 - 简介 <a target="_blank" rel="noopener" href="https://www.twle.cn/c/yufei/phpmmethod/phpmmethod-basic-index.html">https://www.twle.cn/c/yufei/phpmmethod/phpmmethod-basic-index.html</a></p>
+<p>[3] [BUUCTF-WEB] [网鼎杯 2020 青龙组]AreUSerialz <a target="_blank" rel="noopener" href="https://juejin.cn/post/6929123441257742350">https://juejin.cn/post/6929123441257742350</a></p>
+<p>[4] AreUSerialz-[网鼎杯 2020 青龙组]-[传送门-＞BUUCTF] <a target="_blank" rel="noopener" href="https://www.secn.net/article/349246.html">https://www.secn.net/article/349246.html</a></p>
+<p>[5] Typecho反序列化漏洞分析 <a target="_blank" rel="noopener" href="https://lanvnal.com/2020/03/15/typecho-fan-xu-lie-hua-lou-dong-fen-xi/">https://lanvnal.com/2020/03/15/typecho-fan-xu-lie-hua-lou-dong-fen-xi/</a></p>
+</div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>Echoram</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="http://echoram.tk/2021/04/27/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="反序列化漏洞学习笔记">http://echoram.tk/2021/04/27/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><svg class="icon"><use xlink:href="#icon-creative-commons-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-by-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-nc-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-sa-line"></use></svg></a> 许可协议。</li></ul></section></article><div class="post-nav"><div class="post-nav-item"></div><div class="post-nav-item"><a class="post-nav-next" href="/2020/12/23/%E6%B3%A8%E5%86%8C%E8%A1%A8%E8%AF%A6%E8%A7%A3/" rel="next" title="注册表详解"><span class="post-nav-text">注册表详解</span><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-right-s-line"></use></svg></a></div></div></div><div id="comment"><div class="comment-tooltip text-center"><span>若您想及时得到回复提醒，建议使用邮箱联系博主呦~</span><br></div><div id="valine-container"></div><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script>function initValine() {
+  const valineConfig = {"enable":true,"appId":"tgTIs6toa7rmkMnrsSTHEg1p-MdYXbMMI","appKey":"mA678OPlrWqFxom64uRzNBXL","placeholder":"请写下你宝贵的评论~","avatar":"monsterid","pageSize":10,"visitor":true,"highlight":true,"recordIP":false,"enableQQ":true,"meta":["nick","mail","link"],"lang":"zh-cn","Emoji See":"https://valine.js.org/emoji.html","el":"#valine-container"}
+  valineConfig.path = window.location.pathname
+  new Valine(valineConfig)
+}
+setTimeout(initValine, 800)</script></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2020 – 2021 </span><span class="with-love" id="animate"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-cloud-line"></use></svg></span><span class="author"> Echoram</span></div><div class="powered"><span>由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v5.2.0</span><span class="footer-separator">|</span><span>主题 - <a rel="noopener" href="https://github.com/YunYouJun/hexo-theme-yun" target="_blank"><span>Yun</span></a> v1.3.0</span></div><div class="live_time"><span>本博客已稳健运行</span><span id="display_live_time"></span><span class="moe-text">(~_~)</span><script>function blog_live_time() {
+  window.setTimeout(blog_live_time, 1000);
+  const start = new Date('2020-12-10T00:00:00');
+  const now = new Date();
+  const timeDiff = (now.getTime() - start.getTime());
+  const msPerMinute = 60 * 1000;
+  const msPerHour = 60 * msPerMinute;
+  const msPerDay = 24 * msPerHour;
+  const passDay = Math.floor(timeDiff / msPerDay);
+  const passHour = Math.floor((timeDiff % msPerDay) / 60 / 60 / 1000);
+  const passMinute = Math.floor((timeDiff % msPerHour) / 60 / 1000);
+  const passSecond = Math.floor((timeDiff % msPerMinute) / 1000);
+  display_live_time.innerHTML = " " + passDay + " 天 " + passHour + " 小时 " + passMinute + " 分 " + passSecond + " 秒";
+}
+blog_live_time();
+</script></div></footer><a class="hty-icon-button" id="goUp" aria-label="back-to-top" href="#"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-up-s-line"></use></svg><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a><a class="popup-trigger hty-icon-button icon-search" id="search" href="javascript:;" title="搜索"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-search-line"></use></svg></span></a><script>window.addEventListener("DOMContentLoaded", () => {
+  // Handle and trigger popup window
+  document.querySelector(".popup-trigger").addEventListener("click", () => {
+    document.querySelector(".popup").classList.add("show");
+    setTimeout(() => {
+      document.querySelector(".search-input").focus();
+    }, 100);
+  });
+
+  // Monitor main search box
+  const onPopupClose = () => {
+    document.querySelector(".popup").classList.remove("show");
+  };
+
+  document.querySelector(".popup-btn-close").addEventListener("click", () => {
+    onPopupClose();
+  });
+
+  window.addEventListener("keyup", event => {
+    if (event.key === "Escape") {
+      onPopupClose();
+    }
+  });
+});
+</script><script src="/js/search/local-search.js" defer></script><div class="popup search-popup"><div class="search-header"><span class="popup-btn-close close-icon hty-icon-button"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-close-line"></use></svg></span></div><div class="search-input-container"><input class="search-input" id="local-search-input" type="text" placeholder="想要搜些什么？" value=""></div><div id="local-search-result"></div></div></div><script defer src="/js/utils.js"></script><script defer src="/js/hexo-theme-yun.js"></script></body></html>
