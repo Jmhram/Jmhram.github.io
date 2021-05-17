@@ -145,6 +145,7 @@
 <p>得到<code>flag</code>：</p>
 <p><img src="https://raw.githubusercontent.com/Jmhram/markdown/main/img/20210512201513.png" alt="image-20210512201513080" loading="lazy"></p>
 <h2 id="0x02-BUUCTF-0CTF-2016-piapiapia"><a href="#0x02-BUUCTF-0CTF-2016-piapiapia" class="headerlink" title="0x02 BUUCTF-[0CTF 2016]piapiapia"></a>0x02 BUUCTF-[0CTF 2016]piapiapia</h2><h3 id="1-1-题目分析"><a href="#1-1-题目分析" class="headerlink" title="1.1 题目分析"></a>1.1 题目分析</h3><p>我是看着标签点的这题，进去一看差点以为是注入：</p>
+<p><img src="https://raw.githubusercontent.com/Jmhram/markdown/main/img/20210517160111.png" alt="image-20210517160111128" loading="lazy"></p>
 <p>尝试了一下没有思路后，我就认怂了，结果题解说扫目录可以发现该题的源码<code>www.zip</code>，但是该题网页访问过快会返回<code>429</code>状态码，所以拿御剑扫不出来，不过题解说可以用<code>dirsearch</code>扫出来</p>
 <h3 id="1-2-源码分析"><a href="#1-2-源码分析" class="headerlink" title="1.2 源码分析"></a>1.2 源码分析</h3><p>拿到源码之后就可以开始审计了，首先我在<code>profile.php</code>中发现了<code>unserialize()</code>，且被反序列化的参数<code>$profile</code>来源于<code>$user</code>对象的<code>show_profile()</code>方法，并且，最重要的是：**<code>$profile[&#39;photo&#39;]</code>被<code>file_get_contents</code>取了出来，这也意味着若我们能控制<code>photo</code>的值，便可以得到任意文件**，而恰恰在在<code>config.php</code>中，定义了<code>$flag</code></p>
 <pre class="language-php" data-language="php"><code class="language-php"><span class="token php language-php"><span class="token delimiter important">&lt;?php</span> <span class="token comment">//profile.php</span>
