@@ -270,7 +270,7 @@
   <entry>
     <title>反序列化漏洞学习笔记（一）—— 反序列化漏洞原理</title>
     <url>/2021/04/27/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/</url>
-    <content><![CDATA[<h3 id="0x01-原理"><a href="#0x01-原理" class="headerlink" title="0x01 原理"></a>0x01 原理</h3><h4 id="1-1-序列化"><a href="#1-1-序列化" class="headerlink" title="1.1 序列化"></a>1.1 序列化</h4><p>序列化是<font color=red><code>将一个对象压缩成一个字符串的方法</code></font>，可以将对象的状态信息转化为可以存储或传输的形式。</p>
+    <content><![CDATA[<h3 id="0x01-原理"><a href="#0x01-原理" class="headerlink" title="0x01 原理"></a>0x01 原理</h3><h4 id="1-1-序列化与反序列化"><a href="#1-1-序列化与反序列化" class="headerlink" title="1.1 序列化与反序列化"></a>1.1 序列化与反序列化</h4><p><strong>序列化</strong>是<font color=red><code>将一个对象压缩成一个字符串的方法</code></font>，可以将对象的状态信息转化为可以存储或传输的形式。</p>
 <p><strong>举个栗子</strong>：此处代码来源于[1]</p>
 <pre class="language-php" data-language="php"><code class="language-php"><span class="token php language-php"><span class="token delimiter important">&lt;?php</span>
 <span class="token keyword">class</span> <span class="token class-name">userInfo</span>
@@ -309,9 +309,9 @@
 </blockquote>
 <p>因此，一个对象序列化之后，字符中也就只有对象名、对象的属性键值对，并不包含方法</p>
 <p><font color=red><code>注：private属性在序列化的时候还包含空字节，所以一般要编码操作</code></font></p>
-<h4 id="1-2-反序列化"><a href="#1-2-反序列化" class="headerlink" title="1.2 反序列化"></a>1.2 反序列化</h4><p>反序列化是将序列化后的字符串”解压缩”成对象的过程。</p>
+<p><strong>反序列化</strong>是将序列化后的字符串”解压缩”成对象的过程。</p>
 <p><strong>但是</strong>，当这个字符串被还原的时候，并不会包含任何方法。因此，反序列化的对象想要使用原先的方法必须依托于<strong>域</strong>，脱离了原本的域，反序列的对象无法使用之前的方法。</p>
-<h4 id="1-3-PHP魔术方法"><a href="#1-3-PHP魔术方法" class="headerlink" title="1.3 PHP魔术方法"></a>1.3 PHP魔术方法</h4><p>在PHP中，有一些魔术方法，在特定条件下，会自动触发，如果这些函数中不幸<del>(nice)</del>存在一些可利用的函数，就可以进行下一步攻击。16个魔法函数如下：</p>
+<h4 id="1-2-PHP魔术方法利用"><a href="#1-2-PHP魔术方法利用" class="headerlink" title="1.2 PHP魔术方法利用"></a>1.2 PHP魔术方法利用</h4><p>在PHP中，有一些魔术方法，在特定条件下，会自动触发，如果这些函数中不幸<del>(nice)</del>存在一些可利用的函数，就可以进行下一步攻击。16个魔法函数如下：</p>
 <blockquote>
 <ul>
 <li>_autoload() : 当使用未定义的类时，自动调用该函数（7.2.0版本被弃用）</li>
@@ -333,6 +333,135 @@
 </ul>
 </blockquote>
 <p><font color=red><code>注：所有魔法函数必须声明为public</code></font></p>
+<h4 id="1-3-普通成员方法利用"><a href="#1-3-普通成员方法利用" class="headerlink" title="1.3 普通成员方法利用"></a>1.3 普通成员方法利用</h4><p>寻找相同的同名方法，将敏感函数和类联系在一起。</p>
+<pre class="language-php" data-language="php"><code class="language-php"><span class="token php language-php"><span class="token delimiter important">&lt;?php</span>
+<span class="token keyword">class</span> <span class="token class-name">chybeta</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">var</span> <span class="token variable">$test</span><span class="token punctuation">;</span>
+    <span class="token keyword">function</span> <span class="token function">__construct</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token variable">$this</span><span class="token operator">-</span><span class="token operator">></span><span class="token property">test</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ph0en1x</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">function</span> <span class="token function">__destruct</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token variable">$this</span><span class="token operator">-</span><span class="token operator">></span><span class="token property">test</span><span class="token operator">-</span><span class="token operator">></span><span class="token function">action</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">class</span> <span class="token class-name">ph0en1x</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">function</span> <span class="token function">action</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">echo</span> <span class="token double-quoted-string string">"ph0en1x"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">class</span> <span class="token class-name">ph0en2x</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">var</span> <span class="token variable">$test2</span><span class="token punctuation">;</span>
+    <span class="token keyword">function</span> <span class="token function">action</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">eval</span><span class="token punctuation">(</span><span class="token variable">$this</span><span class="token operator">-</span><span class="token operator">></span><span class="token property">test2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token variable">$class6</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">chybeta</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">unserialize</span><span class="token punctuation">(</span><span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token single-quoted-string string">'test'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token delimiter important">?></span></span></code></pre>
+
+<p>例如上文中的代码：</p>
+<p>析构函数中调用了对象的<code>action()</code>方法，而<code>ph0en1x</code>类和<code>ph0en2x</code>类中均含有<code>action()</code>方法，所以，若在构造序列化的时候将<code>test</code>属性设置为<code>ph0en2x</code>对象，则可以使用<code>ph0en2x</code>中的<code>eval()</code>函数执行自定义的<code>PHP</code>语句。</p>
+<p>POC如下：</p>
+<pre class="language-php" data-language="php"><code class="language-php"><span class="token php language-php"><span class="token delimiter important">&lt;?php</span>
+<span class="token keyword">class</span> <span class="token class-name">chybeta</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">var</span> <span class="token variable">$test</span><span class="token punctuation">;</span>
+    <span class="token keyword">function</span> <span class="token function">__construct</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token variable">$this</span><span class="token operator">-</span><span class="token operator">></span><span class="token property">test</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ph0en2x</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">class</span> <span class="token class-name">ph0en2x</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">var</span> <span class="token variable">$test2</span> <span class="token operator">=</span> <span class="token double-quoted-string string">"phpinfo();"</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">echo</span> <span class="token function">serialize</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">chybeta</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token delimiter important">?></span></span></code></pre>
+
+<h4 id="1-4-反序列化字符逃逸"><a href="#1-4-反序列化字符逃逸" class="headerlink" title="1.4 反序列化字符逃逸"></a>1.4 反序列化字符逃逸</h4><p>PHP反序列化字符逃逸依靠PHP在反序列化时的几个特性：</p>
+<blockquote>
+<ul>
+<li><p>对类中不存在的属性也会反序列化</p>
+</li>
+<li><p>在反序列化时，底层代码是以 <code>;</code> 作为字段的分隔，以 <code>&#125;</code> 作为结尾(字符串除外)，并且根据长度判断内容</p>
+<p>例：正常的反序列化可执行<code>a:2:&#123;i:0;s:6:&quot;peri0d&quot;;i:1;s:5:&quot;aaaaa&quot;;&#125;</code></p>
+<p>执行<code>a:2:&#123;i:0;s:6:&quot;peri0d&quot;;i:1;s:5:&quot;aaaaa&quot;;&#125;i:1;s:5:&quot;aaaaa&quot;;</code>仍可得到相同结果</p>
+</li>
+</ul>
+</blockquote>
+<p>所以当碰到PHP对反序列化的字符串进行替换、删除等改变字符长度的操作时，可以构造<code>payload</code>使得替换后的字符串仍能正常反序列化，并反序列化为自定义的内容</p>
+<h4 id="1-5-phar反序列化"><a href="#1-5-phar反序列化" class="headerlink" title="1.5 phar反序列化"></a>1.5 phar反序列化</h4><p><code>phar://</code>是<code>PHP</code>解压压缩包的一个函数，不管什么，都会当做压缩包来解压，当使用该伪协议读取<code>phar</code>文件时，会自动将文件中的<code>meta-data</code>部分反序列化</p>
+<p>在真实情况，需要将构造好的<code>phar</code>文件上传到目标服务器，然后利用<code>phar</code>在解压时会反序化<code>meta-data</code>部分来达到目的</p>
+<p><code>phar</code>文件生成如下：</p>
+<pre class="language-php" data-language="php"><code class="language-php"><span class="token php language-php"><span class="token delimiter important">&lt;?php</span>
+    <span class="token keyword">class</span> <span class="token class-name">TestObject</span> <span class="token punctuation">&#123;</span>
+
+    <span class="token punctuation">&#125;</span>
+    <span class="token variable">$phar</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Phar</span><span class="token punctuation">(</span><span class="token single-quoted-string string">'phar.phar'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$phar</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token function">startBuffering</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$phar</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token function">setStub</span><span class="token punctuation">(</span><span class="token single-quoted-string string">'GIF89a'</span><span class="token punctuation">.</span><span class="token single-quoted-string string">'&lt;?php __HALT_COMPILER();?>'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>   <span class="token comment">//设置stub，增加gif文件头</span>
+    <span class="token variable">$phar</span> <span class="token operator">-</span><span class="token operator">></span><span class="token function">addFromString</span><span class="token punctuation">(</span><span class="token single-quoted-string string">'test.txt'</span><span class="token punctuation">,</span><span class="token single-quoted-string string">'test'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">//添加要压缩的文件</span>
+    <span class="token variable">$object</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">TestObject</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$object</span> <span class="token operator">-</span><span class="token operator">></span> data <span class="token operator">=</span> <span class="token single-quoted-string string">'Lmg'</span><span class="token punctuation">;</span>
+    <span class="token variable">$phar</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token function">setMetadata</span><span class="token punctuation">(</span><span class="token variable">$object</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">//将自定义meta-data存入manifest</span>
+    <span class="token variable">$phar</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token function">stopBuffering</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token delimiter important">?></span></span></code></pre>
+
+<p>注意测试的时候要将<code>php.ini</code>的<code>phar.readonly</code>参数设置为<code>off</code>：</p>
+<p><img src="https://raw.githubusercontent.com/Jmhram/markdown/main/img/20210525160442.png" alt="image-20210525160435845" loading="lazy"></p>
+<blockquote>
+<p>利用条件：</p>
+<ul>
+<li>phar文件要能上传</li>
+<li>有可利用函数如上图，可魔法函数构造pop链</li>
+<li>文件函数操作可控，: / phar 等没过被过滤</li>
+</ul>
+</blockquote>
+<h4 id="1-6-SESSION反序列化"><a href="#1-6-SESSION反序列化" class="headerlink" title="1.6 SESSION反序列化"></a>1.6 SESSION反序列化</h4><p><code>session</code>用于跟踪用户的行为，保存用户的信息和状态等等。服务器创建一个<code>sessionid</code>命名的文件，用于保存这个用户的会话信息。</p>
+<p>当会话开始或通过<code>session_start()</code>开始时，<code>php</code>内部会通过传来的<code>sessionid</code>来读取文件，<code>php</code>会自动序列化<code>session</code>文件内容，并将其填充到超全局变量<code>$_SESSION</code>中。如果不存在对应的会话数据，则创建一个<code>sessionid</code>的文件。</p>
+<blockquote>
+<p>常见session存储位置：</p>
+<p>/var/lib/php5/sess_PHPSESSID</p>
+<p>/var/lib/php7/sess_PHPSESSID</p>
+<p>/var/lib/php/sess_PHPSESSID </p>
+<p>/tmp/sess_PHPSESSID </p>
+<p>/tmp/sessions/sess_PHPSESSED</p>
+</blockquote>
+<p>session的<strong>存储机制</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>机制</th>
+<th>存储格式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>php</td>
+<td>键名+竖线+serialize函数序列化处理的值</td>
+</tr>
+<tr>
+<td>php_binary</td>
+<td>键名长度对应的ASCII字符+键名+serialize函数序列化处理的值</td>
+</tr>
+<tr>
+<td>php_serialize</td>
+<td>serialize函数序列化处理的值</td>
+</tr>
+</tbody></table>
+<p>例如：</p>
+<blockquote>
+<ul>
+<li>Lmg|s:3:”123”; ————————-ini_set(‘session.serialize_handler’, ‘php’); php机制</li>
+<li>Lmgs:3:”123”; ————————ini_set(“session.serialize_handler”, “php_binary”); php_binary机制</li>
+<li>a:1:{s:3:”Lmg”;s:3:”123”;} ———–ini_set(“session.serialize_handler”, “php_serialize”); php_serialize机制</li>
+</ul>
+</blockquote>
+<p><code>产生session反序列的原因就在程序员在读取或者存储中使用了不同的机制</code></p>
+<p>举个栗子：假如存储时使用<code>php_serialize</code>机制，而读取时使用了<code>php</code>机制，那么存储时看似正常的竖线则会在读取时变为分隔符</p>
+<blockquote>
+<p>存储的内容：a:1:{s:3:”Lmg”;s:60:”|O:7:”student”:2:{s:4:”name”;s:4:”hack”;s:3:”age”;s:2:”19”;}</p>
+<p>读取的内容（竖线前的内容被看作变量名）：O:7:”student”:2:{s:4:”name”;s:4:”hack”;s:3:”age”;s:2:”19”;}</p>
+</blockquote>
+<p><strong>没有$_SESSION赋值的session反序列化：</strong></p>
+<p>在<code>php</code>中存在一个<code>upload_process</code>机制，可以自动创建<code>$_SESSION</code>一个键值对，而且其中的值用户可以控制，文件上传时应用可以发送一个POST请求到终端来检查这个状态</p>
+<p>在上传文件时，<code>post</code>一个于<code>session.upload_process.name</code>同名的变量。后端就会自动将<code>post</code>的这个同名变量作为键，进行序列化然后存储到<code>session</code>文件中</p>
 <h3 id="0x02-BUUCTF-网鼎杯-2020-青龙组-AreUSerialz"><a href="#0x02-BUUCTF-网鼎杯-2020-青龙组-AreUSerialz" class="headerlink" title="0x02 BUUCTF-[网鼎杯 2020 青龙组]AreUSerialz"></a>0x02 BUUCTF-[网鼎杯 2020 青龙组]AreUSerialz</h3><h4 id="2-1-源码分析"><a href="#2-1-源码分析" class="headerlink" title="2.1 源码分析"></a>2.1 源码分析</h4><pre class="language-php" data-language="php"><code class="language-php"><span class="token php language-php"><span class="token delimiter important">&lt;?php</span>
 
 <span class="token keyword">include</span><span class="token punctuation">(</span><span class="token double-quoted-string string">"flag.php"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -647,6 +776,8 @@
 <p>[3] [BUUCTF-WEB] [网鼎杯 2020 青龙组]AreUSerialz <a href="https://juejin.cn/post/6929123441257742350">https://juejin.cn/post/6929123441257742350</a></p>
 <p>[4] AreUSerialz-[网鼎杯 2020 青龙组]-[传送门-＞BUUCTF] <a href="https://www.secn.net/article/349246.html">https://www.secn.net/article/349246.html</a></p>
 <p>[5] Typecho反序列化漏洞分析 <a href="https://lanvnal.com/2020/03/15/typecho-fan-xu-lie-hua-lou-dong-fen-xi/">https://lanvnal.com/2020/03/15/typecho-fan-xu-lie-hua-lou-dong-fen-xi/</a></p>
+<p>[6] 浅谈php反序列化漏洞 <a href="https://chybeta.github.io/2017/06/17/%E6%B5%85%E8%B0%88php%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/">https://chybeta.github.io/2017/06/17/%E6%B5%85%E8%B0%88php%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/</a></p>
+<p>[7] php反序列化漏洞 <a href="https://www.cnblogs.com/Lmg66/p/13709419.html">https://www.cnblogs.com/Lmg66/p/13709419.html</a></p>
 ]]></content>
       <categories>
         <category>笔记</category>
