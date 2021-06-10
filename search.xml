@@ -787,4 +787,219 @@
         <tag>Web</tag>
       </tags>
   </entry>
+  <entry>
+    <title>PHP伪协议总结</title>
+    <url>/2021/06/09/PHP%E4%BC%AA%E5%8D%8F%E8%AE%AE%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<h3 id="0x01-协议概述"><a href="#0x01-协议概述" class="headerlink" title="0x01 协议概述"></a>0x01 协议概述</h3><p><strong>PHP伪协议事实上就是支持的协议与封装协议（12种）</strong></p>
+<blockquote>
+<ul>
+<li>file:// — 访问本地文件系统</li>
+<li>http:// — 访问 HTTP(s) 网址</li>
+<li>php:// — 访问各个输入/输出流（I/O streams）</li>
+<li>zlib:// — 压缩流</li>
+<li>data:// — 数据（RFC 2397）</li>
+<li>phar:// — PHP 归档</li>
+<li>ftp:// — 访问 FTP(s) URLs</li>
+<li>glob:// — 查找匹配的文件路径模式</li>
+<li>ssh2:// — Secure Shell 2</li>
+<li>rar:// — RAR</li>
+<li>ogg:// — 音频流</li>
+<li>expect:// — 处理交互式的流</li>
+</ul>
+</blockquote>
+<h3 id="0x02-协议总结"><a href="#0x02-协议总结" class="headerlink" title="0x02 协议总结"></a>0x02 协议总结</h3><h4 id="2-1-file-协议"><a href="#2-1-file-协议" class="headerlink" title="2.1 file:// 协议"></a>2.1 file:// 协议</h4><p>用于访问本地文件系统，通常用来<strong>读取本地文件</strong>，且不受配置中<code>allow_url_fopen</code>与<code>allow_url_include</code>的影响。</p>
+<p><code>include()/require()/include_once()/require_once()</code>参数可控的情况下，导入为非<code>.php</code>文件，则仍按照PHP进行解析。</p>
+<p><strong>使用条件：</strong></p>
+<blockquote>
+<ul>
+<li>allow_url_fopen: On/Off</li>
+<li>allow_url_include: On/Off</li>
+</ul>
+</blockquote>
+<p><strong>使用方法：</strong><code>file:// [文件的绝对路径和文件名]</code></p>
+<p><strong>举个栗子：</strong></p>
+<pre class="language-php" data-language="php"><code class="language-php">#include.php
+<span class="token php language-php"><span class="token delimiter important">&lt;?php</span> <span class="token variable">$file</span><span class="token operator">=</span><span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token double-quoted-string string">"file"</span><span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token keyword">include</span><span class="token punctuation">(</span><span class="token variable">$file</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token delimiter important">?></span></span> 
+    
+#test.txt
+<span class="token php language-php"><span class="token delimiter important">&lt;?php</span> <span class="token keyword">echo</span><span class="token punctuation">(</span><span class="token double-quoted-string string">"hello,world!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token delimiter important">?></span></span>
+
+#output
+hello,world!
+
+http://127.0.0.1/include.php?file=file://E:/path/to/test.txt   #绝对路径</code></pre>
+
+<h4 id="2-2-http-协议"><a href="#2-2-http-协议" class="headerlink" title="2.2 http:// 协议"></a>2.2 http:// 协议</h4><p>数常规 <code>URL</code> 形式，允许通过 <code>HTTP 1.0</code> 的 <code>GET</code>方法，以只读访问文件或资源</p>
+<p><strong>使用条件：</strong></p>
+<blockquote>
+<ul>
+<li>allow_url_fopen : on</li>
+<li>allow_url_include : on</li>
+</ul>
+</blockquote>
+<p><strong>举个栗子：</strong></p>
+<pre class="language-apl" data-language="apl"><code class="language-apl">http<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span><span class="token number">127.0</span><span class="token number">.0</span><span class="token number">.1</span><span class="token monadic-operator operator">/</span>include<span class="token dyadic-operator operator">.</span>php<span class="token function">?</span>file<span class="token function">=</span>http<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span><span class="token number">127.0</span><span class="token number">.0</span><span class="token number">.1</span><span class="token monadic-operator operator">/</span>phpinfo<span class="token dyadic-operator operator">.</span>txt</code></pre>
+
+<h4 id="2-3-php-协议"><a href="#2-3-php-协议" class="headerlink" title="2.3 php://协议"></a>2.3 php://协议</h4><p>用于访问 <code>PHP</code> 的输入输出流、标准输入输出和错误描述符，内存中、磁盘备份的临时文件流以及可以操作其他读取写入文件资源的过滤器。</p>
+<blockquote>
+<p><strong>php://input</strong> : 可以访问请求的原始数据的只读流，在POST请求中访问POST的<code>data</code>部分，在<code>enctype=&quot;multipart/form-data&quot;</code> 的时候<code>php://input </code>无效。</p>
+<p>**php://filter **: (PHP&gt;=5.0.0)一种元封装器，设计用于数据流打开时的筛选过滤应用。对于一体式（all-in-one）的文件函数非常有用，类似 readfile()、file() 和 file_get_contents()，在数据流内容读取之前没有机会应用其他过滤器。</p>
+<p><strong>php://output</strong> : 只写的数据流，允许以 print 和 echo 一样的方式写入到输出缓冲区。</p>
+<p><strong>php://fd</strong> : (PHP&gt;=5.3.6)允许直接访问指定的文件描述符。</p>
+<p><strong>php://memory php://temp</strong> : (PHP&gt;=5.1.0)一个类似文件包装器的数据流，允许读写临时数据。两者的唯一区别是 php://memory 总是把数据储存在内存中，而 php://temp 会在内存量达到预定义的限制后（默认是 2MB）存入临时文件中。临时文件位置的决定和 sys_get_temp_dir() 的方式一致。</p>
+</blockquote>
+<p><strong>使用条件：</strong></p>
+<blockquote>
+<ul>
+<li><p>allow_url_fopen: On/Off</p>
+</li>
+<li><p>allow_url_include: On</p>
+<p>仅<code>php://input php://stdin php://memory php://temp </code>需要on</p>
+</li>
+</ul>
+</blockquote>
+<p><strong>使用方法：</strong></p>
+<p><code>php://filter</code>协议的参数会在该协议路径上进行传递，多个参数都可以在一个路径上传递。具体参考如下：</p>
+<table>
+<thead>
+<tr>
+<th>php://filter 参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>resource=&lt;要过滤的数据流&gt;</td>
+<td>必须项。它指定了你要筛选过滤的数据流。</td>
+</tr>
+<tr>
+<td>read=&lt;读链的过滤器&gt;</td>
+<td>可选项。可以设定一个或多个过滤器名称，以管道符（<em>\</em>）分隔。</td>
+</tr>
+<tr>
+<td>write=&lt;写链的过滤器&gt;</td>
+<td>可选项。可以设定一个或多个过滤器名称，以管道符（\）分隔。</td>
+</tr>
+<tr>
+<td>&lt;;两个链的过滤器&gt;</td>
+<td>任何没有以 <em>read=</em> 或 <em>write=</em> 作前缀的筛选器列表会视情况应用于读或写链。</td>
+</tr>
+</tbody></table>
+<p><strong>举个栗子：</strong></p>
+<pre class="language-apl" data-language="apl"><code class="language-apl">php<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span>input <span class="token dfn builtin">:</span> 
+http<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span><span class="token number">127.0</span><span class="token number">.0</span><span class="token number">.1</span><span class="token monadic-operator operator">/</span>include<span class="token dyadic-operator operator">.</span>php<span class="token function">?</span>file<span class="token function">=</span>php<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span>input
+POST部分自定义payload
+
+php<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span>filter <span class="token dfn builtin">:</span> 
+http<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span><span class="token number">127.0</span><span class="token number">.0</span><span class="token number">.1</span><span class="token monadic-operator operator">/</span>include<span class="token dyadic-operator operator">.</span>php<span class="token function">?</span>file<span class="token function">=</span>php<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span>filter<span class="token monadic-operator operator">/</span>read<span class="token function">=</span>convert<span class="token dyadic-operator operator">.</span>base64<span class="token function">-</span>encode<span class="token monadic-operator operator">/</span>resource<span class="token function">=</span>phpinfo<span class="token dyadic-operator operator">.</span>php <span class="token constant">#</span>读取文件源码（针对php文件需要base64编码）
+
+php<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span>output <span class="token dfn builtin">:</span> 
+http<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span><span class="token number">127.0</span><span class="token number">.0</span><span class="token number">.1</span><span class="token monadic-operator operator">/</span>include<span class="token dyadic-operator operator">.</span>php<span class="token function">?</span>file<span class="token function">=</span>php<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span>output</code></pre>
+
+<h4 id="2-4-zlib-bzip2-zip-协议"><a href="#2-4-zlib-bzip2-zip-协议" class="headerlink" title="2.4 zlib:// | bzip2:// | zip://协议"></a>2.4 zlib:// | bzip2:// | zip://协议</h4><p>用于访问压缩文件中的子文件，不需要指定后缀名，可修改为任意后缀</p>
+<p><strong>使用条件：</strong></p>
+<blockquote>
+<ul>
+<li>allow_url_fopen : off/on</li>
+<li>allow_url_include : off/on</li>
+</ul>
+</blockquote>
+<p><strong>使用方法：</strong></p>
+<blockquote>
+<p>zip://[压缩文件绝对路径]%23[压缩文件内的子文件名]#编码为%23）</p>
+<p>compress.bzip2://[压缩文件绝对路径]</p>
+<p>compress.zlib://[压缩文件绝对路径]</p>
+</blockquote>
+<p><strong>举个栗子：</strong></p>
+<pre class="language-apl" data-language="apl"><code class="language-apl">zip<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span> <span class="token dfn builtin">:</span> 
+http<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span><span class="token number">127.0</span><span class="token number">.0</span><span class="token number">.1</span><span class="token monadic-operator operator">/</span>include<span class="token dyadic-operator operator">.</span>php<span class="token function">?</span>file<span class="token function">=</span>zip<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span>E<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span>path<span class="token monadic-operator operator">/</span>to<span class="token monadic-operator operator">/</span>phpinfo<span class="token dyadic-operator operator">.</span>jpg%<span class="token number">23</span>phpinfo<span class="token dyadic-operator operator">.</span>txt <span class="token punctuation">(</span>%<span class="token number">23</span>是<span class="token constant">#</span>的编码<span class="token punctuation">)</span>
+
+bzip2<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span> <span class="token dfn builtin">:</span> 
+http<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span><span class="token number">127.0</span><span class="token number">.0</span><span class="token number">.1</span><span class="token monadic-operator operator">/</span>include<span class="token dyadic-operator operator">.</span>php<span class="token function">?</span>file<span class="token function">=</span>compress<span class="token dyadic-operator operator">.</span>bzip2<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span>E<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span>path<span class="token monadic-operator operator">/</span>to<span class="token monadic-operator operator">/</span>phpinfo<span class="token dyadic-operator operator">.</span>bz2
+
+zlib<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span> <span class="token dfn builtin">:</span>
+http<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span><span class="token number">127.0</span><span class="token number">.0</span><span class="token number">.1</span><span class="token monadic-operator operator">/</span>include<span class="token dyadic-operator operator">.</span>php<span class="token function">?</span>file<span class="token function">=</span>compress<span class="token dyadic-operator operator">.</span>zlib<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span>E<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span>path<span class="token monadic-operator operator">/</span>to<span class="token monadic-operator operator">/</span>phpinfo<span class="token dyadic-operator operator">.</span>gz</code></pre>
+
+<h4 id="2-5-data-协议"><a href="#2-5-data-协议" class="headerlink" title="2.5 data:// 协议"></a>2.5 data:// 协议</h4><p>数据流封装器，用于传递相应格式的数据。通常可以用来执行<code>PHP</code>代码。（<code>PHP&gt;=5.2.0</code>）</p>
+<p><strong>使用条件：</strong></p>
+<blockquote>
+<ul>
+<li>allow_url_fopen : on</li>
+<li>allow_url_include : on</li>
+</ul>
+</blockquote>
+<p><strong>使用方法：</strong></p>
+<blockquote>
+<p>data://text/plain,[data]</p>
+<p>data://text/plain;base64,[data]</p>
+</blockquote>
+<p><strong>举个栗子：</strong></p>
+<pre class="language-apl" data-language="apl"><code class="language-apl">http<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span><span class="token number">127.0</span><span class="token number">.0</span><span class="token number">.1</span><span class="token monadic-operator operator">/</span>include<span class="token dyadic-operator operator">.</span>php<span class="token function">?</span>file<span class="token function">=</span>data<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span>text<span class="token monadic-operator operator">/</span>plain<span class="token function">,</span><span class="token function">&lt;</span><span class="token function">?</span>php phpinfo<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token function">?</span><span class="token function">></span>
+
+http<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span><span class="token number">127.0</span><span class="token number">.0</span><span class="token number">.1</span><span class="token monadic-operator operator">/</span>include<span class="token dyadic-operator operator">.</span>php<span class="token function">?</span>file<span class="token function">=</span>data<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span>text<span class="token monadic-operator operator">/</span>plain<span class="token punctuation">;</span>base64<span class="token function">,</span><span class="token punctuation">[</span>base64<span class="token punctuation">]</span></code></pre>
+
+<h4 id="2-6-phar-协议"><a href="#2-6-phar-协议" class="headerlink" title="2.6 phar:// 协议"></a>2.6 phar:// 协议</h4><p><code>phar://</code>协议与<code>zip://</code>类似，可以访问<code>zip</code>格式压缩包内容</p>
+<p><strong>举个栗子：</strong></p>
+<pre class="language-apl" data-language="apl"><code class="language-apl">http<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span><span class="token number">127.0</span><span class="token number">.0</span><span class="token number">.1</span><span class="token monadic-operator operator">/</span>include<span class="token dyadic-operator operator">.</span>php<span class="token function">?</span>file<span class="token function">=</span>phar<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span>E<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span>path<span class="token monadic-operator operator">/</span>to<span class="token monadic-operator operator">/</span>phpinfo<span class="token dyadic-operator operator">.</span>zip<span class="token monadic-operator operator">/</span>phpinfo<span class="token dyadic-operator operator">.</span>txt</code></pre>
+
+<p>注：<code>phar://</code>协议读取<code>phar</code>文件时，会自动将文件中的<code>meta-data</code>部分反序列化，因此可以用来构造反序列化漏洞</p>
+<h4 id="2-7-ftp-协议"><a href="#2-7-ftp-协议" class="headerlink" title="2.7 ftp:// 协议"></a>2.7 ftp:// 协议</h4><p>访问<code>FTP(s) URLs</code>时，允许通过<code>FTP</code>读取存在的文件、创建新文件。 如果服务器不支持被动<code>（passive）</code>模式的<code>FTP</code>，连接会失败。</p>
+<p>打开文件后无法同时进行读写。 当远程文件已经存在于<code>ftp</code>服务器上，如果尝试打开并写入文件的时候， 未指定上下文<code>（context）</code>选项<code>overwrite</code>，连接会失败。 如果要通过<code>FTP</code>覆盖存在的文件， 指定上下文<code>（context）</code>的<code>overwrite</code>选项来打开、写入。 </p>
+<h4 id="2-8-glob-协议"><a href="#2-8-glob-协议" class="headerlink" title="2.8 glob:// 协议"></a>2.8 glob:// 协议</h4><p>查找匹配的文件路径模式（PHP&gt;=5.3.0）</p>
+<p><strong>举个栗子：</strong></p>
+<pre class="language-php" data-language="php"><code class="language-php"><span class="token php language-php"><span class="token delimiter important">&lt;?php</span>
+<span class="token comment">// 循环 ext/spl/examples/ 目录里所有 *.php 文件</span>
+<span class="token comment">// 并打印文件名和文件尺寸</span>
+<span class="token variable">$it</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">DirectoryIterator</span><span class="token punctuation">(</span><span class="token double-quoted-string string">"glob://ext/spl/examples/*.php"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">foreach</span><span class="token punctuation">(</span><span class="token variable">$it</span> <span class="token keyword">as</span> <span class="token variable">$f</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token double-quoted-string string">"%s: %.1FK\n"</span><span class="token punctuation">,</span> <span class="token variable">$f</span><span class="token operator">-</span><span class="token operator">></span><span class="token function">getFilename</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token variable">$f</span><span class="token operator">-</span><span class="token operator">></span><span class="token function">getSize</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">/</span><span class="token number">1024</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token delimiter important">?></span></span></code></pre>
+
+<h4 id="2-9-ssh2-协议"><a href="#2-9-ssh2-协议" class="headerlink" title="2.9 ssh2:// 协议"></a>2.9 ssh2:// 协议</h4><p><code>Secure Shell 2</code>，默认没有激活，如果需要使用<code>ssh2.*://</code>封装协议，必须安装来自<code>PECL</code>的<code>SSH2</code>扩展，主要形式有：</p>
+<pre class="language-apl" data-language="apl"><code class="language-apl">ssh2<span class="token dyadic-operator operator">.</span>shell<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span>
+ssh2<span class="token dyadic-operator operator">.</span>exec<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span>
+ssh2<span class="token dyadic-operator operator">.</span>tunnel<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span>
+ssh2<span class="token dyadic-operator operator">.</span>sftp<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span>
+ssh2<span class="token dyadic-operator operator">.</span>scp<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span></code></pre>
+
+<p>该伪协议除了支持传统的<code>URI</code>登录信息，<code>ssh2</code>封装协议也支持通过<code>URL</code>的主机<code>（host）</code>部分来复用打开连接，用法如下所示：</p>
+<pre class="language-apl" data-language="apl"><code class="language-apl">ssh2<span class="token dyadic-operator operator">.</span>shell<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span>user<span class="token dfn builtin">:</span>pass<span class="token dyadic-operator operator">@</span>example<span class="token dyadic-operator operator">.</span>com<span class="token dfn builtin">:</span><span class="token number">22</span><span class="token monadic-operator operator">/</span>xterm
+ssh2<span class="token dyadic-operator operator">.</span>exec<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span>user<span class="token dfn builtin">:</span>pass<span class="token dyadic-operator operator">@</span>example<span class="token dyadic-operator operator">.</span>com<span class="token dfn builtin">:</span><span class="token number">22</span><span class="token monadic-operator operator">/</span>usr<span class="token monadic-operator operator">/</span>local<span class="token monadic-operator operator">/</span>bin<span class="token monadic-operator operator">/</span>somecmd
+ssh2<span class="token dyadic-operator operator">.</span>tunnel<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span>user<span class="token dfn builtin">:</span>pass<span class="token dyadic-operator operator">@</span>example<span class="token dyadic-operator operator">.</span>com<span class="token dfn builtin">:</span><span class="token number">22</span><span class="token monadic-operator operator">/</span><span class="token number">192.168</span><span class="token number">.0</span><span class="token number">.1</span><span class="token dfn builtin">:</span><span class="token number">14</span>
+ssh2<span class="token dyadic-operator operator">.</span>sftp<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span>user<span class="token dfn builtin">:</span>pass<span class="token dyadic-operator operator">@</span>example<span class="token dyadic-operator operator">.</span>com<span class="token dfn builtin">:</span><span class="token number">22</span><span class="token monadic-operator operator">/</span>path<span class="token monadic-operator operator">/</span>to<span class="token monadic-operator operator">/</span>filename</code></pre>
+
+<p>下面示例从一个活动连接中打开字节流：</p>
+<pre class="language-php" data-language="php"><code class="language-php"><span class="token php language-php"><span class="token delimiter important">&lt;?php</span>
+<span class="token variable">$session</span> <span class="token operator">=</span> <span class="token function">ssh2_connect</span><span class="token punctuation">(</span><span class="token single-quoted-string string">'example.com'</span><span class="token punctuation">,</span> <span class="token number">22</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">ssh2_auth_pubkey_file</span><span class="token punctuation">(</span><span class="token variable">$session</span><span class="token punctuation">,</span> <span class="token single-quoted-string string">'username'</span><span class="token punctuation">,</span> <span class="token single-quoted-string string">'/home/username/.ssh/id_rsa.pub'</span><span class="token punctuation">,</span>
+                                            <span class="token single-quoted-string string">'/home/username/.ssh/id_rsa'</span><span class="token punctuation">,</span> <span class="token single-quoted-string string">'secret'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token variable">$stream</span> <span class="token operator">=</span> <span class="token function">fopen</span><span class="token punctuation">(</span><span class="token double-quoted-string string">"ssh2.tunnel://<span class="token interpolation"><span class="token variable">$session</span></span>/remote.example.com:1234"</span><span class="token punctuation">,</span> <span class="token single-quoted-string string">'r'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token delimiter important">?></span></span></code></pre>
+
+<h4 id="2-10-rar-协议"><a href="#2-10-rar-协议" class="headerlink" title="2.10 rar://协议"></a>2.10 rar://协议</h4><p>用于打开文件和目录，需要安装<code>PECL</code>的<code>rar</code>扩展</p>
+<p><strong>使用方法：</strong></p>
+<p><code>rar://E:/path/to/test.rar#test.txt</code></p>
+<h4 id="2-11-ogg-协议"><a href="#2-11-ogg-协议" class="headerlink" title="2.11 ogg:// 协议"></a>2.11 ogg:// 协议</h4><p>音频流协议，用以读取<code>OGG/Vorbis</code>格式的压缩音频编码，并能通过该伪协议写入或追加压缩音频数据，默认未激活，使用需要安装<code>PECL</code>中的<code>OGG/Vorbis</code>扩展。</p>
+<p><strong>举个栗子：</strong></p>
+<pre class="language-apl" data-language="apl"><code class="language-apl">ogg<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span>soundfile<span class="token dyadic-operator operator">.</span>ogg
+ogg<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span>path<span class="token monadic-operator operator">/</span>to<span class="token monadic-operator operator">/</span>soundfile<span class="token dyadic-operator operator">.</span>ogg
+ogg<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span>http<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span>www<span class="token dyadic-operator operator">.</span>example<span class="token dyadic-operator operator">.</span>com<span class="token monadic-operator operator">/</span>path<span class="token monadic-operator operator">/</span>to<span class="token monadic-operator operator">/</span>soundstream<span class="token dyadic-operator operator">.</span>ogg</code></pre>
+
+<h4 id="2-12-expect-协议"><a href="#2-12-expect-协议" class="headerlink" title="2.12 expect://协议"></a>2.12 expect://协议</h4><p>用以处理交互式的流，由<code>expect://</code>封装协议打开的数据流<code>PTY</code>提供了对进程<code>stdio</code>、<code>stdout</code>和<code>stderr</code>的访问，默认未开启，使用须安装<code>PECL</code>上的<code>Expect</code>扩展。</p>
+<p><strong>举个栗子：</strong></p>
+<pre class="language-apl" data-language="apl"><code class="language-apl">expect<span class="token dfn builtin">:</span><span class="token monadic-operator operator">/</span><span class="token monadic-operator operator">/</span>command</code></pre>
+
+<h3 id="0x03-参考"><a href="#0x03-参考" class="headerlink" title="0x03 参考"></a>0x03 参考</h3><p>[1] [PHP伪协议总结] <a href="https://segmentfault.com/a/1190000018991087">https://segmentfault.com/a/1190000018991087</a></p>
+<p>[2] [浅谈PHP-伪协议] <a href="https://www.yuque.com/pmiaowu/web_security_1/lnq3co#Z778L">https://www.yuque.com/pmiaowu/web_security_1/lnq3co#Z778L</a></p>
+<p>[3] [PHP伪协议相关] <a href="https://zhuanlan.zhihu.com/p/49206578">https://zhuanlan.zhihu.com/p/49206578</a></p>
+<p>[4] [PHP伪协议总结] <a href="https://www.xiaozzz.xyz/2019/09/21/PHP%E4%BC%AA%E5%8D%8F%E8%AE%AE%E6%80%BB%E7%BB%93/">https://www.xiaozzz.xyz/2019/09/21/PHP%E4%BC%AA%E5%8D%8F%E8%AE%AE%E6%80%BB%E7%BB%93/</a></p>
+]]></content>
+      <categories>
+        <category>笔记</category>
+      </categories>
+      <tags>
+        <tag>Web</tag>
+        <tag>PHP</tag>
+      </tags>
+  </entry>
 </search>
